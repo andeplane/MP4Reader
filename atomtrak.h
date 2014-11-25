@@ -6,6 +6,7 @@ class AtomTRAK : public MP4Box
 {
 public:
     AtomTRAK();
+    void readThisBox();
 };
 
 #endif // ATOMTRAK_H

@@ -6,6 +6,7 @@ class AtomMDIA : public MP4Box
 {
 public:
     AtomMDIA();
+    void readThisBox();
 };
 
 #endif // ATOMMDIA_H

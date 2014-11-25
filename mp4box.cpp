@@ -2,6 +2,7 @@
 #include "mp4reader.h"
 #include "atoms.h"
 
+#include <algorithm>
 #include <iostream>
 using std::cout; using std::endl;
 
@@ -37,11 +38,15 @@ void MP4Box::setup(MP4Reader *reader, unsigned int length, string type, MP4Box *
 
 MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
 {
+    cout << endl << "Will read a new atom" << endl;
+    reader->newBoxLength(16); // The function will subtract 8 for the headerbytes, but currently, the total 8 bytes might be everything, so this will add a total of 8 bytes until the next header.
     unsigned int length;
     string type;
     reader->readHeader(length, type);
     reader->newBoxLength(length);
     MP4Box *box;
+
+    vector<string> supportedExtraAtoms = {"iods", "edts"};
 
     if(type.compare(string("ftyp")) == 0) {
         cout << "Read a box of type FTYP with length " << length << endl;
@@ -49,9 +54,33 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     } else if(type.compare(string("moov")) == 0) {
         cout << "Read a box of type MOOV with length " << length << endl;
         box = new AtomMOOV();
+    } else if(type.compare(string("mvhd")) == 0) {
+        cout << "Read a box of type MVHD with length " << length << endl;
+        box = new AtomMVHD();
+//    } else if(type.compare(string("iods")) == 0) {
+//        cout << "Read a box of type IODS with length " << length << endl;
+//        box = new MP4Box();
+//        reader->skipRemainingBytes();
+    } else if(type.compare(string("trak")) == 0) {
+        cout << "Read a box of type TRAK with length " << length << endl;
+        box = new AtomTRAK();
+    } else if(type.compare(string("tkhd")) == 0) {
+        cout << "Read a box of type TKHD with length " << length << endl;
+        box = new AtomTKHD();
+    } else if(type.compare(string("mdia")) == 0) {
+        cout << "Read a box of type MDIA with length " << length << endl;
+        box = new AtomMDIA();
+    } else if(type.compare(string("mdhd")) == 0) {
+        cout << "Read a box of type MDHD with length " << length << endl;
+        box = new AtomMDHD();
     } else {
-        cout << "Box of type " << type << " is not implemented yet, aborting! " << endl;
-        exit(1);
+        if(std::find(supportedExtraAtoms.begin(), supportedExtraAtoms.end(), type) != supportedExtraAtoms.end()) {
+            box = new MP4Box(type);
+            cout << "Read a box of type " << type << " with length " << length << endl;
+        } else {
+            cout << "Box of type " << type << " is not implemented yet, aborting! " << endl;
+            exit(1);
+        }
     }
 
     cout << "Calling setup" << endl;
@@ -71,6 +100,11 @@ vector<MP4Box *> &MP4Box::children()
     return m_children;
 }
 
+void MP4Box::readThisBox()
+{
+    m_reader->skipRemainingBytes();
+}
+
 FullHeader MP4Box::readFullHeader()
 {
     FullHeader header;
@@ -81,8 +115,9 @@ FullHeader MP4Box::readFullHeader()
     return header;
 }
 
-void MP4Box::readRemainingBoxes() {
-
+void MP4Box::readRemainingBoxes()
+{
+    cout << "Will create a new reader reading the rest of this atom." << endl;
     MP4Reader *reader = m_reader->subReader(this);
     reader->readBoxes();
     MP4Box::readBox(m_reader, this);

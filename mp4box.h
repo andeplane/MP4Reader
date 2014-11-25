@@ -1,5 +1,6 @@
 #ifndef MP4BOX_H
 #define MP4BOX_H
+#include <iostream>
 #include <vector>
 #include <string>
 
@@ -12,6 +13,8 @@
 
 using std::vector;
 using std::string;
+using std::cout;
+using std::endl;
 
 struct FullHeader {
     unsigned char version;
@@ -30,7 +33,7 @@ protected:
     vector<MP4Box*> m_children;
     MP4Reader      *m_reader;
 
-    virtual void readThisBox() { }
+    virtual void readThisBox();
     FullHeader readFullHeader();
     int remainingBytes();
     void readRemainingBoxes();

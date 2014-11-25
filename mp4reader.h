@@ -39,6 +39,9 @@ public:
     void skipRemainingBytes();
     unsigned int remainingBytes();
     MP4Reader *subReader(MP4Box *parent);
+    float readFP8();
+    float readFP16();
+    string readISO639();
 };
 
 class MP4FileReader

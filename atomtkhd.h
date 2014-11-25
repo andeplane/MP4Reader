@@ -14,6 +14,11 @@ public:
     unsigned short layer;
     unsigned short alternateGroup;
     unsigned int matrix[9];
+    float        volume;
+    float        width;
+    float        height;
+
+    void readThisBox();
 };
 
 #endif // ATOMTKHD_H

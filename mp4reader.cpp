@@ -15,6 +15,7 @@ MP4Reader::MP4Reader(char *bytes, unsigned int length, MP4Box *parent)
     }
     m_bytes = bytes;
     m_length = length;
+    m_nextBoxAt = 8;
 }
 
 MP4FileReader::MP4FileReader(string filename, int totalNumberOfBytes) :
@@ -41,9 +42,15 @@ void MP4Reader::skipBytes(int numBytes) {
 
 void MP4Reader::readBytes(int numBytes, void *destination)
 {
-    cout << "    Reading " << numBytes << " bytes." << endl;
+    cout << "    Reading " << numBytes << " bytes - " << remainingBytes() << " bytes left in atom." << endl;
     memcpy(destination, &m_bytes[m_currentLocation], numBytes);
     m_currentLocation += numBytes;
+}
+
+string MP4Reader::readISO639()
+{
+    short bits = readUShort();
+    return "";
 }
 
 string MP4Reader::readUTF8(int length) {
@@ -125,7 +132,7 @@ void MP4Reader::readUIntArray(int length, unsigned int *array)
 void MP4Reader::newBoxLength(unsigned int length)
 {
     m_nextBoxAt = m_currentLocation + length - 8; // We have already used 8 bytes for the header
-    cout << "New box length: " << length << " giving next box at " << m_nextBoxAt << endl;
+    // cout << "New box length: " << length << " giving next box at " << m_nextBoxAt << endl;
 }
 
 void MP4Reader::skipRemainingBytes() {
@@ -143,6 +150,18 @@ MP4Reader *MP4Reader::subReader(MP4Box *parent)
 {
     MP4Reader *subReader = new MP4Reader(&m_bytes[m_currentLocation], remainingBytes(), parent);
     return subReader;
+}
+
+float MP4Reader::readFP16()
+{
+    int n = readInt();
+    return float(n)/65536.0f;
+}
+
+float MP4Reader::readFP8()
+{
+    short n = readShort();
+    return float(n)/256.0f;
 }
 
 unsigned int MP4Reader::readUInt()
@@ -188,13 +207,13 @@ void MP4FileReader::readBytesFromFile(int numBytes) {
         m_totalNumberOfBytes = numBytes;
     }
     m_bytes = new char[numBytes];
-
     m_file.read(reinterpret_cast<char*>(m_bytes), numBytes);
 }
 
 void MP4FileReader::read()
 {
     readBytesFromFile(-1);
+    cout << "Total number of bytes in file: " << m_totalNumberOfBytes << endl;
     MP4Reader *reader = new MP4Reader(m_bytes, m_totalNumberOfBytes, 0);
     reader->readBoxes();
 }
