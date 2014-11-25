@@ -25,6 +25,7 @@ class MP4Box
 protected:
     unsigned int    m_length;
     string          m_type;
+    string          m_name;
     MP4Box         *m_parent;
     vector<MP4Box*> m_children;
     MP4Reader      *m_reader;
@@ -35,6 +36,7 @@ protected:
     void readRemainingBoxes();
 public:
     MP4Box();
+    MP4Box(string name);
     void setup(MP4Reader *reader, unsigned int length, string type, MP4Box *parent);
     static MP4Box *readBox(MP4Reader *reader, MP4Box *parent);
     vector<MP4Box *> &children();

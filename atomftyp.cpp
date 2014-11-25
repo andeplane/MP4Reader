@@ -3,7 +3,7 @@
 
 AtomFTYP::AtomFTYP()
 {
-
+    m_name = "File Type Box (FTYP)";
 }
 
 void AtomFTYP::readThisBox()

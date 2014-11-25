@@ -14,22 +14,15 @@ class MP4Box;
 class MP4Reader
 {
 private:
-    string   m_filename;
-    ifstream m_file;
     unsigned int      m_currentLocation;
-    int      m_totalNumberOfBytes;
+    MP4Box           *m_topNode;
+    char             *m_bytes;
+    unsigned int      m_length;
     unsigned int      m_nextBoxAt;
-    vector<char> m_bytes;
-    MP4Box  *m_topNode;
-
-    bool open();
-    void ensureOpen();
-    void readBytesFromFile(int numBytes);
 public:
-    MP4Reader(string filename, int totalNumberOfBytes);
+    MP4Reader(char *bytes, unsigned int length, MP4Box *parent);
     void readBoxes();
     void readHeader(unsigned int &length, string &type);
-
     void readBytes(int numBytes, void *destination);
     void skipBytes(int numBytes);
     int readInt();
@@ -44,6 +37,24 @@ public:
     void readUIntArray(int length, unsigned int *array);
     void newBoxLength(unsigned int length);
     void skipRemainingBytes();
+    unsigned int remainingBytes();
+    MP4Reader *subReader(MP4Box *parent);
+};
+
+class MP4FileReader
+{
+private:
+    string   m_filename;
+    ifstream m_file;
+    int      m_totalNumberOfBytes;
+    char    *m_bytes;
+
+    bool open();
+    void ensureOpen();
+    void readBytesFromFile(int numBytes);
+public:
+    MP4FileReader(string filename, int totalNumberOfBytes);
+    void read();
 };
 
 #endif // MP4READER_H

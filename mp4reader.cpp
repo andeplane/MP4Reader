@@ -7,22 +7,24 @@
 
 using std::cout; using std::endl;
 
-MP4Reader::MP4Reader(string filename, int totalNumberOfBytes) :
-    m_currentLocation(0),
-    m_totalNumberOfBytes(totalNumberOfBytes),
-    m_topNode(0),
-    m_nextBoxAt(0)
+MP4Reader::MP4Reader(char *bytes, unsigned int length, MP4Box *parent)
+{
+    if(parent) m_topNode = parent;
+    else {
+        m_topNode = new MP4Box("root");
+    }
+    m_bytes = bytes;
+    m_length = length;
+}
+
+MP4FileReader::MP4FileReader(string filename, int totalNumberOfBytes) :
+    m_totalNumberOfBytes(totalNumberOfBytes)
 {
     m_filename = filename;
 }
 
 void MP4Reader::readBoxes() {
-    readBytesFromFile(m_totalNumberOfBytes);
-    m_topNode = new MP4Box();
-
-    bool shouldContinueReading = true;
-    while(shouldContinueReading) {
-        cout << "Reading box on root with location " << m_currentLocation << endl;
+    while(m_currentLocation + 4 < m_length) {
         MP4Box::readBox(this, m_topNode);
     }
 }
@@ -127,9 +129,20 @@ void MP4Reader::newBoxLength(unsigned int length)
 }
 
 void MP4Reader::skipRemainingBytes() {
-    unsigned int bytesLeftInBox = m_nextBoxAt - m_currentLocation;
+    unsigned int bytesLeftInBox = remainingBytes();
     cout << "Skipping the remaining " << bytesLeftInBox << " bytes in this atom." << endl;
     skipBytes(bytesLeftInBox);
+}
+
+unsigned int MP4Reader::remainingBytes()
+{
+    return m_nextBoxAt - m_currentLocation;
+}
+
+MP4Reader *MP4Reader::subReader(MP4Box *parent)
+{
+    MP4Reader *subReader = new MP4Reader(&m_bytes[m_currentLocation], remainingBytes(), parent);
+    return subReader;
 }
 
 unsigned int MP4Reader::readUInt()
@@ -141,7 +154,7 @@ unsigned int MP4Reader::readUInt()
     return n;
 }
 
-bool MP4Reader::open()
+bool MP4FileReader::open()
 {
     m_file.open(m_filename, std::ios::binary | std::ios::in);
     if(m_file.is_open()) return true;
@@ -157,14 +170,14 @@ bool MP4Reader::open()
     }
 }
 
-void MP4Reader::ensureOpen() {
+void MP4FileReader::ensureOpen() {
     if(!m_file.is_open()) {
         cout << "File " << m_filename << " is not open, opening..." << endl;
         open();
     }
 }
 
-void MP4Reader::readBytesFromFile(int numBytes) {
+void MP4FileReader::readBytesFromFile(int numBytes) {
     // TODO: Possibly broken and not general at all...
     ensureOpen();
     if(numBytes == -1) {
@@ -174,9 +187,14 @@ void MP4Reader::readBytesFromFile(int numBytes) {
         cout << "Will read the whole file which is " << numBytes << " bytes long." << endl;
         m_totalNumberOfBytes = numBytes;
     }
+    m_bytes = new char[numBytes];
 
-    int currentLocation = m_bytes.size();
-    m_bytes.resize(numBytes + m_bytes.size(), 0);
+    m_file.read(reinterpret_cast<char*>(m_bytes), numBytes);
+}
 
-    m_file.read(reinterpret_cast<char*>(&m_bytes[currentLocation]), numBytes);
+void MP4FileReader::read()
+{
+    readBytesFromFile(-1);
+    MP4Reader *reader = new MP4Reader(m_bytes, m_totalNumberOfBytes, 0);
+    reader->readBoxes();
 }

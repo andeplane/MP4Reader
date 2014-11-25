@@ -8,6 +8,17 @@ using std::cout; using std::endl;
 MP4Box::MP4Box() :
     m_length(0),
     m_type(""),
+    m_name(""),
+    m_parent(0),
+    m_reader(0)
+{
+
+}
+
+MP4Box::MP4Box(std::string name) :
+    m_length(0),
+    m_type(name),
+    m_name(name),
     m_parent(0),
     m_reader(0)
 {
@@ -35,6 +46,9 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     if(type.compare(string("ftyp")) == 0) {
         cout << "Read a box of type FTYP with length " << length << endl;
         box = new AtomFTYP();
+    } else if(type.compare(string("moov")) == 0) {
+        cout << "Read a box of type MOOV with length " << length << endl;
+        box = new AtomMOOV();
     } else {
         cout << "Box of type " << type << " is not implemented yet, aborting! " << endl;
         exit(1);
@@ -68,8 +82,11 @@ FullHeader MP4Box::readFullHeader()
 }
 
 void MP4Box::readRemainingBoxes() {
-    // char *restBoxes = &m_bytes[m_currentLocation];
-    // int offset = 0;
+
+    MP4Reader *reader = m_reader->subReader(this);
+    reader->readBoxes();
+    MP4Box::readBox(m_reader, this);
+    delete reader;
 }
 
 //void MP4Box::readFTYP() {

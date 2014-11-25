@@ -6,6 +6,7 @@ class AtomMOOV : public MP4Box
 {
 public:
     AtomMOOV();
+    void readThisBox();
 };
 
 #endif // ATOMMOOV_H
