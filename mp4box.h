@@ -29,10 +29,9 @@ protected:
     vector<MP4Box*> m_children;
     MP4Reader      *m_reader;
 
-    virtual void readThisBox() = 0;
+    virtual void readThisBox() { }
     FullHeader readFullHeader();
     int remainingBytes();
-    void skipRemainingBytes();
     void readRemainingBoxes();
 public:
     MP4Box();

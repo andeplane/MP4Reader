@@ -21,7 +21,7 @@ void MP4Box::setup(MP4Reader *reader, unsigned int length, string type, MP4Box *
     m_type = type;
     m_parent = parent;
 
-    parent->addChild(this);
+    if(parent) parent->addChild(this);
 }
 
 MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
@@ -29,14 +29,21 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     unsigned int length;
     string type;
     reader->readHeader(length, type);
+    reader->newBoxLength(length);
     MP4Box *box;
 
     if(type.compare(string("ftyp")) == 0) {
+        cout << "Read a box of type FTYP with length " << length << endl;
         box = new AtomFTYP();
+    } else {
+        cout << "Box of type " << type << " is not implemented yet, aborting! " << endl;
+        exit(1);
     }
 
+    cout << "Calling setup" << endl;
     box->setup(reader, length, type, parent);
-
+    box->readThisBox();
+    cout << "Finished with box of type " << type << endl;
     return box;
 }
 
@@ -58,11 +65,6 @@ FullHeader MP4Box::readFullHeader()
     header.flags[1] = m_reader->readUChar();
     header.flags[2] = m_reader->readUChar();
     return header;
-}
-
-void MP4Box::skipRemainingBytes() {
-    cout << "Skipping " << remainingBytes() << " bytes." << endl;
-    m_reader->skipBytes(remainingBytes());
 }
 
 void MP4Box::readRemainingBoxes() {

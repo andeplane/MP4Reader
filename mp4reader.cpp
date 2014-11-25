@@ -16,13 +16,30 @@ MP4Reader::MP4Reader(string filename, int totalNumberOfBytes) :
     m_filename = filename;
 }
 
+void MP4Reader::readBoxes() {
+    readBytesFromFile(m_totalNumberOfBytes);
+    m_topNode = new MP4Box();
+
+    bool shouldContinueReading = true;
+    while(shouldContinueReading) {
+        cout << "Reading box on root with location " << m_currentLocation << endl;
+        MP4Box::readBox(this, m_topNode);
+    }
+}
+
 void MP4Reader::readHeader(unsigned int &length, string &type) {
     length = readUInt();
     type = read4Chars();
 }
 
+void MP4Reader::skipBytes(int numBytes) {
+    cout << "    Skipping " << numBytes << " bytes." << endl;
+    m_currentLocation += numBytes;
+}
+
 void MP4Reader::readBytes(int numBytes, void *destination)
 {
+    cout << "    Reading " << numBytes << " bytes." << endl;
     memcpy(destination, &m_bytes[m_currentLocation], numBytes);
     m_currentLocation += numBytes;
 }
@@ -105,11 +122,13 @@ void MP4Reader::readUIntArray(int length, unsigned int *array)
 
 void MP4Reader::newBoxLength(unsigned int length)
 {
-    m_nextBoxAt = m_currentLocation + length;
+    m_nextBoxAt = m_currentLocation + length - 8; // We have already used 8 bytes for the header
+    cout << "New box length: " << length << " giving next box at " << m_nextBoxAt << endl;
 }
 
 void MP4Reader::skipRemainingBytes() {
     unsigned int bytesLeftInBox = m_nextBoxAt - m_currentLocation;
+    cout << "Skipping the remaining " << bytesLeftInBox << " bytes in this atom." << endl;
     skipBytes(bytesLeftInBox);
 }
 
@@ -130,26 +149,32 @@ bool MP4Reader::open()
         std::cout << "Could not open file " << m_filename << std::endl;
         return false;
     }
+
+    if(m_totalNumberOfBytes == -1) {
+        // We have the whole file
+        cout << "We are asked to read the whole file" << endl;
+        readBytesFromFile(-1);
+    }
 }
 
 void MP4Reader::ensureOpen() {
     if(!m_file.is_open()) {
+        cout << "File " << m_filename << " is not open, opening..." << endl;
         open();
     }
 }
 
-void MP4Reader::readBoxes() {
-    readBytesFromFile(m_totalNumberOfBytes);
-    m_topNode = MP4Box::readBox(this, 0);
-
-    bool shouldContinueReading = true;
-    while(shouldContinueReading) {
-        // readBox(m_topNode);
-    }
-}
-
 void MP4Reader::readBytesFromFile(int numBytes) {
+    // TODO: Possibly broken and not general at all...
     ensureOpen();
+    if(numBytes == -1) {
+        m_file.seekg (0, m_file.end);
+        numBytes = m_file.tellg();
+        m_file.seekg (0, m_file.beg);
+        cout << "Will read the whole file which is " << numBytes << " bytes long." << endl;
+        m_totalNumberOfBytes = numBytes;
+    }
+
     int currentLocation = m_bytes.size();
     m_bytes.resize(numBytes + m_bytes.size(), 0);
 
