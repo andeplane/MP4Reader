@@ -18,9 +18,12 @@ private:
     MP4Box           *m_topNode;
     char             *m_bytes;
     unsigned int      m_length;
+    unsigned int      m_offset;
     unsigned int      m_nextBoxAt;
 public:
-    MP4Reader(char *bytes, unsigned int length, MP4Box *parent);
+    MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4Box *parent);
+    unsigned int currentLocation() { return m_currentLocation; }
+    unsigned int offset() { return m_offset; }
     void readBoxes();
     void readHeader(unsigned int &length, string &type);
     void readBytes(int numBytes, void *destination);

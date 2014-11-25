@@ -7,12 +7,13 @@
 
 using std::cout; using std::endl;
 
-MP4Reader::MP4Reader(char *bytes, unsigned int length, MP4Box *parent)
+MP4Reader::MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4Box *parent)
 {
     if(parent) m_topNode = parent;
     else {
         m_topNode = new MP4Box("root");
     }
+    m_offset = offset;
     m_bytes = bytes;
     m_length = length;
     m_nextBoxAt = 8;
@@ -148,7 +149,8 @@ unsigned int MP4Reader::remainingBytes()
 
 MP4Reader *MP4Reader::subReader(MP4Box *parent)
 {
-    MP4Reader *subReader = new MP4Reader(&m_bytes[m_currentLocation], remainingBytes(), parent);
+    cout << "Will create a subreader from " << m_currentLocation+m_offset << " with remaining bytes: " << remainingBytes() << endl;
+    MP4Reader *subReader = new MP4Reader(&m_bytes[m_currentLocation], remainingBytes(), m_currentLocation+m_offset, parent);
     return subReader;
 }
 
@@ -214,6 +216,6 @@ void MP4FileReader::read()
 {
     readBytesFromFile(-1);
     cout << "Total number of bytes in file: " << m_totalNumberOfBytes << endl;
-    MP4Reader *reader = new MP4Reader(m_bytes, m_totalNumberOfBytes, 0);
+    MP4Reader *reader = new MP4Reader(m_bytes, m_totalNumberOfBytes, 0, 0);
     reader->readBoxes();
 }

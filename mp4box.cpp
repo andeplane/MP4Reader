@@ -46,37 +46,49 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     reader->newBoxLength(length);
     MP4Box *box;
 
-    vector<string> supportedExtraAtoms = {"iods", "edts"};
+    vector<string> supportedExtraAtoms = {"iods", "edts", "vmhd", "dinf"};
 
     if(type.compare(string("ftyp")) == 0) {
-        cout << "Read a box of type FTYP with length " << length << endl;
+        cout << "Read a box of type FTYP with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomFTYP();
     } else if(type.compare(string("moov")) == 0) {
-        cout << "Read a box of type MOOV with length " << length << endl;
+        cout << "Read a box of type MOOV with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomMOOV();
     } else if(type.compare(string("mvhd")) == 0) {
-        cout << "Read a box of type MVHD with length " << length << endl;
+        cout << "Read a box of type MVHD with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomMVHD();
 //    } else if(type.compare(string("iods")) == 0) {
 //        cout << "Read a box of type IODS with length " << length << endl;
 //        box = new MP4Box();
 //        reader->skipRemainingBytes();
     } else if(type.compare(string("trak")) == 0) {
-        cout << "Read a box of type TRAK with length " << length << endl;
+        cout << "Read a box of type TRAK with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomTRAK();
     } else if(type.compare(string("tkhd")) == 0) {
-        cout << "Read a box of type TKHD with length " << length << endl;
+        cout << "Read a box of type TKHD with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomTKHD();
     } else if(type.compare(string("mdia")) == 0) {
-        cout << "Read a box of type MDIA with length " << length << endl;
+        cout << "Read a box of type MDIA with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomMDIA();
     } else if(type.compare(string("mdhd")) == 0) {
-        cout << "Read a box of type MDHD with length " << length << endl;
+        cout << "Read a box of type MDHD with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomMDHD();
+    } else if(type.compare(string("hdlr")) == 0) {
+        cout << "Read a box of type HDLR with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
+        box = new AtomHDLR();
+    } else if(type.compare(string("minf")) == 0) {
+        cout << "Read a box of type MINF with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
+        box = new AtomMINF();
+    } else if(type.compare(string("stbl")) == 0) {
+        cout << "Read a box of type STBL with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
+        box = new AtomSTBL();
+    } else if(type.compare(string("stsd")) == 0) {
+        cout << "Read a box of type STSD with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
+        box = new AtomSTSD();
     } else {
         if(std::find(supportedExtraAtoms.begin(), supportedExtraAtoms.end(), type) != supportedExtraAtoms.end()) {
             box = new MP4Box(type);
-            cout << "Read a box of type " << type << " with length " << length << endl;
+            cout << "Read a box of type " << type << " with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         } else {
             cout << "Box of type " << type << " is not implemented yet, aborting! " << endl;
             exit(1);
@@ -117,7 +129,6 @@ FullHeader MP4Box::readFullHeader()
 
 void MP4Box::readRemainingBoxes()
 {
-    cout << "Will create a new reader reading the rest of this atom." << endl;
     MP4Reader *reader = m_reader->subReader(this);
     reader->readBoxes();
     MP4Box::readBox(m_reader, this);

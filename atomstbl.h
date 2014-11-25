@@ -6,6 +6,7 @@ class AtomSTBL : public MP4Box
 {
 public:
     AtomSTBL();
+    void readThisBox();
 };
 
 #endif // ATOMSTBL_H

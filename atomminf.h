@@ -4,7 +4,9 @@
 
 class AtomMINF : public MP4Box
 {
+public:
     AtomMINF();
+    void readThisBox();
 };
 
 #endif // ATOMMINF_H
