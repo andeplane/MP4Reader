@@ -45,6 +45,7 @@ public:
     float readFP8();
     float readFP16();
     string readISO639();
+    void readUCharArray(int length, unsigned char *array);
 };
 
 class MP4FileReader

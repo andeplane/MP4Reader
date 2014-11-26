@@ -6,6 +6,11 @@ class AtomBTRT : public MP4Box
 {
 public:
     AtomBTRT();
+    unsigned int bufferSizeDb;
+    unsigned int maxBitrate;
+    unsigned int avgBitrate;
+
+    void readThisBox();
 };
 
 #endif // ATOMBTRT_H

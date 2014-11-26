@@ -81,7 +81,7 @@ short MP4Reader::readShort()
 {
     short n;
     readBytes(sizeof(short), &n);
-    n = __builtin_bswap32(n);
+    n = __builtin_bswap16(n);
 
     return n;
 }
@@ -90,7 +90,7 @@ unsigned short MP4Reader::readUShort()
 {
     unsigned short n;
     readBytes(sizeof(unsigned short), &n);
-    n = __builtin_bswap32(n);
+    n = __builtin_bswap16(n);
 
     return n;
 }
@@ -126,6 +126,14 @@ void MP4Reader::readUIntArray(int length, unsigned int *array)
 {
     for(int i=0; i<length; i++) {
         readBytes(sizeof(unsigned int), &array[i]);
+        array[i] = __builtin_bswap32(array[i]);
+    }
+}
+
+void MP4Reader::readUCharArray(int length, unsigned char *array)
+{
+    for(int i=0; i<length; i++) {
+        readBytes(sizeof(unsigned char), &array[i]);
         array[i] = __builtin_bswap32(array[i]);
     }
 }

@@ -57,10 +57,6 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     } else if(type.compare(string("mvhd")) == 0) {
         cout << "Read a box of type MVHD with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomMVHD();
-//    } else if(type.compare(string("iods")) == 0) {
-//        cout << "Read a box of type IODS with length " << length << endl;
-//        box = new MP4Box();
-//        reader->skipRemainingBytes();
     } else if(type.compare(string("trak")) == 0) {
         cout << "Read a box of type TRAK with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomTRAK();
@@ -88,6 +84,12 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     } else if(type.compare(string("avc1")) == 0) {
         cout << "Read a box of type AVC1 with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomAVC1();
+    } else if(type.compare(string("avcC")) == 0) {
+        cout << "Read a box of type AVCC with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
+        box = new AtomAVCC();
+    } else if(type.compare(string("btrt")) == 0) {
+        cout << "Read a box of type BTRT with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
+        box = new AtomBTRT();
     } else {
         if(std::find(supportedExtraAtoms.begin(), supportedExtraAtoms.end(), type) != supportedExtraAtoms.end()) {
             box = new MP4Box(type);
