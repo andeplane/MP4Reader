@@ -85,6 +85,9 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     } else if(type.compare(string("stsd")) == 0) {
         cout << "Read a box of type STSD with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         box = new AtomSTSD();
+    } else if(type.compare(string("avc1")) == 0) {
+        cout << "Read a box of type AVC1 with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
+        box = new AtomAVC1();
     } else {
         if(std::find(supportedExtraAtoms.begin(), supportedExtraAtoms.end(), type) != supportedExtraAtoms.end()) {
             box = new MP4Box(type);
@@ -95,7 +98,6 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
         }
     }
 
-    cout << "Calling setup" << endl;
     box->setup(reader, length, type, parent);
     box->readThisBox();
     cout << "Finished with box of type " << type << endl;

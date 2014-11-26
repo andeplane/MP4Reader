@@ -23,7 +23,7 @@ private:
 public:
     MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4Box *parent);
     unsigned int currentLocation() { return m_currentLocation; }
-    unsigned int offset() { return m_offset; }
+    unsigned int offset() { return m_offset - 8; }
     void readBoxes();
     void readHeader(unsigned int &length, string &type);
     void readBytes(int numBytes, void *destination);
@@ -35,7 +35,7 @@ public:
     char readChar();
     unsigned char readUChar();
     string read4Chars();
-    void readPString();
+    void readPString(unsigned int max);
     string readUTF8(int length);
     void readUIntArray(int length, unsigned int *array);
     void newBoxLength(unsigned int length);

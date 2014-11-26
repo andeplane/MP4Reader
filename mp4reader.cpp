@@ -63,10 +63,10 @@ string MP4Reader::readUTF8(int length) {
     return "";
 }
 
-void MP4Reader::readPString() {
+void MP4Reader::readPString(unsigned int max) {
     unsigned char len;
     readBytes(1, &len);
-    skipBytes(len);
+    skipBytes(max-len-1);
 }
 
 std::string MP4Reader::read4Chars()
