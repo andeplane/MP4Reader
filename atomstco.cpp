@@ -10,7 +10,7 @@ void AtomSTCO::readThisBox()
 {
     fullheader = readFullHeader();
     unsigned int count = m_reader->readUInt();
-    for(int i=0; i<count; i++) {
+    for(unsigned int i=0; i<count; i++) {
         table.push_back(m_reader->readUInt());
     }
 }

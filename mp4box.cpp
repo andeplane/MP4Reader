@@ -120,6 +120,24 @@ void MP4Box::addChild(MP4Box *child)
     m_children.push_back(child);
 }
 
+vector<MP4Box *> MP4Box::findChildren(string type)
+{
+    vector<MP4Box*> children;
+    for(MP4Box *child : m_children) {
+        if(type.compare(child->type()) == 0) {
+            children.push_back(child);
+        }
+    }
+
+    return children;
+}
+
+MP4Box *MP4Box::findChild(string type, unsigned int index)
+{
+    vector<MP4Box*> children = findChildren(type);
+    return children.at(index);
+}
+
 vector<MP4Box *> &MP4Box::children()
 {
     return m_children;

@@ -10,7 +10,7 @@ void AtomSTSC::readThisBox()
 {
     fullheader = readFullHeader();
     unsigned int rows = m_reader->readUInt();
-    for(int i=0; i<rows; i++) {
+    for(unsigned int i=0; i<rows; i++) {
         map<string, unsigned int> row;
         row["firstChunk"] = m_reader->readUInt();
         row["samplesPerChunk"] = m_reader->readUInt();

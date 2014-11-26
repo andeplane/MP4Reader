@@ -36,7 +36,7 @@ public:
     unsigned char readUChar();
     string read4Chars();
     void readPString(unsigned int max);
-    string readUTF8(int length);
+    string readUTF8(int length = 0);
     void readUIntArray(int length, unsigned int *array);
     void newBoxLength(unsigned int length);
     void skipRemainingBytes();

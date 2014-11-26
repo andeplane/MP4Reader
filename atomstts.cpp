@@ -10,7 +10,7 @@ void AtomSTTS::readThisBox()
 {
     fullheader = readFullHeader();
     unsigned int rows = m_reader->readUInt();
-    for(int i=0; i<rows; i++) {
+    for(unsigned int i=0; i<rows; i++) {
         map<string, unsigned int> row;
         row["delta"] = m_reader->readUInt();
         row["count"] = m_reader->readUInt();

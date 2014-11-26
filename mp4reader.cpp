@@ -50,7 +50,8 @@ void MP4Reader::readBytes(int numBytes, void *destination)
 
 string MP4Reader::readISO639()
 {
-    short bits = readUShort();
+    skipBytes(sizeof(unsigned short));
+    // short bits = readUShort();
     return "";
 }
 

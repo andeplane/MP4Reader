@@ -11,6 +11,8 @@ void AtomHDLR::readThisBox()
     m_reader->skipBytes(4);
     handlerType = m_reader->read4Chars();
     m_reader->skipBytes(4*3);
-    cout << "TODO: Read new box name instead of skipping";
+#ifdef MP4DEBUG
+    cout << "HDLR: TODO: Read new box name instead of skipping";
+#endif
     m_reader->skipRemainingBytes();
 }

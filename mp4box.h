@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
 
 #define U16 sizeof(unsigned short)
 #define U32 sizeof(unsigned int)
@@ -15,6 +16,7 @@ using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
+using std::map;
 
 struct FullHeader {
     unsigned char version;
@@ -38,12 +40,19 @@ protected:
     int remainingBytes();
     void readRemainingBoxes();
 public:
+    static MP4Box *readBox(MP4Reader *reader, MP4Box *parent);
     MP4Box();
     MP4Box(string name);
     void setup(MP4Reader *reader, unsigned int length, string type, MP4Box *parent);
-    static MP4Box *readBox(MP4Reader *reader, MP4Box *parent);
-    vector<MP4Box *> &children();
+
+    string type() { return m_type; }
+    string name() { return m_name; }
+    MP4Box *parent() { return m_parent; }
+
     void addChild(MP4Box *child);
+    vector<MP4Box *> &children();
+    vector<MP4Box*> findChildren(string type);
+    MP4Box* findChild(string type, unsigned int index=0);
 
 };
 
