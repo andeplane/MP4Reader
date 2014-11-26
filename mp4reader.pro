@@ -9,29 +9,29 @@ CONFIG += c++11
 SOURCES += main.cpp \
     mp4reader.cpp \
     mp4box.cpp \
-    atommvhd.cpp \
-    atomftyp.cpp \
-    atomtkhd.cpp \
-    atommoov.cpp \
-    atomtrak.cpp \
-    atommdia.cpp \
-    atommdhd.cpp \
-    atomhdlr.cpp \
-    atomminf.cpp \
-    atomstbl.cpp \
-    atomstsd.cpp \
-    atomavc1.cpp \
-    atommp4a.cpp \
-    atomesds.cpp \
-    atomavcc.cpp \
-    atombtrt.cpp \
-    atomstts.cpp \
-    atomstss.cpp \
-    atomstsc.cpp \
-    atomstsz.cpp \
-    atomstco.cpp \
-    atomsmhd.cpp \
-    atommdat.cpp
+    atoms/atommvhd.cpp \
+    atoms/atomftyp.cpp \
+    atoms/atomtkhd.cpp \
+    atoms/atommoov.cpp \
+    atoms/atomtrak.cpp \
+    atoms/atommdia.cpp \
+    atoms/atommdhd.cpp \
+    atoms/atomhdlr.cpp \
+    atoms/atomminf.cpp \
+    atoms/atomstbl.cpp \
+    atoms/atomstsd.cpp \
+    atoms/atomavc1.cpp \
+    atoms/atommp4a.cpp \
+    atoms/atomesds.cpp \
+    atoms/atomavcc.cpp \
+    atoms/atombtrt.cpp \
+    atoms/atomstts.cpp \
+    atoms/atomstss.cpp \
+    atoms/atomstsc.cpp \
+    atoms/atomstsz.cpp \
+    atoms/atomstco.cpp \
+    atoms/atomsmhd.cpp \
+    atoms/atommdat.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -39,28 +39,28 @@ qtcAddDeployment()
 HEADERS += \
     mp4reader.h \
     mp4box.h \
-    atommvhd.h \
-    atomftyp.h \
-    atomtkhd.h \
-    atommoov.h \
-    atomtrak.h \
-    atommdia.h \
-    atommdhd.h \
-    atomhdlr.h \
-    atomminf.h \
-    atomstbl.h \
-    atomstsd.h \
-    atomavc1.h \
-    atommp4a.h \
-    atomesds.h \
-    atomavcc.h \
-    atombtrt.h \
-    atomstts.h \
-    atomstss.h \
-    atomstsc.h \
-    atomstsz.h \
-    atomstco.h \
-    atomsmhd.h \
-    atommdat.h \
-    atoms.h
+    atoms/atommvhd.h \
+    atoms/atomftyp.h \
+    atoms/atomtkhd.h \
+    atoms/atommoov.h \
+    atoms/atomtrak.h \
+    atoms/atommdia.h \
+    atoms/atommdhd.h \
+    atoms/atomhdlr.h \
+    atoms/atomminf.h \
+    atoms/atomstbl.h \
+    atoms/atomstsd.h \
+    atoms/atomavc1.h \
+    atoms/atommp4a.h \
+    atoms/atomesds.h \
+    atoms/atomavcc.h \
+    atoms/atombtrt.h \
+    atoms/atomstts.h \
+    atoms/atomstss.h \
+    atoms/atomstsc.h \
+    atoms/atomstsz.h \
+    atoms/atomstco.h \
+    atoms/atomsmhd.h \
+    atoms/atommdat.h \
+    atoms/atoms.h
 

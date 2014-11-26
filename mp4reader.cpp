@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <cstring>
+#include <cassert>
 
 using std::cout; using std::endl;
 
@@ -20,7 +21,8 @@ MP4Reader::MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4B
 }
 
 MP4FileReader::MP4FileReader(string filename, int totalNumberOfBytes) :
-    m_totalNumberOfBytes(totalNumberOfBytes)
+    m_totalNumberOfBytes(totalNumberOfBytes),
+    m_reader(0)
 {
     m_filename = filename;
 }
@@ -139,6 +141,11 @@ void MP4Reader::readUCharArray(int length, unsigned char *array)
     }
 }
 
+MP4Box *MP4FileReader::findNodeByPath(std::string path)
+{
+    return m_reader->topNode()->findChildByPath(path);
+}
+
 void MP4Reader::newBoxLength(unsigned int length)
 {
     m_nextBoxAt = m_currentLocation + length - 8; // We have already used 8 bytes for the header
@@ -155,6 +162,8 @@ void MP4Reader::skipRemainingBytes() {
 
 unsigned int MP4Reader::remainingBytes()
 {
+    assert( (int(m_nextBoxAt) - int(m_currentLocation))  >=0 && "Remaining bytes is negative, should not happen.");
+
     return m_nextBoxAt - m_currentLocation;
 }
 
@@ -229,6 +238,6 @@ void MP4FileReader::read()
 {
     readBytesFromFile(-1);
     cout << "Total number of bytes in file: " << m_totalNumberOfBytes << endl;
-    MP4Reader *reader = new MP4Reader(m_bytes, m_totalNumberOfBytes, 0, 0);
-    reader->readBoxes();
+    m_reader = new MP4Reader(m_bytes, m_totalNumberOfBytes, 0, 0);
+    m_reader->readBoxes();
 }

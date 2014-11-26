@@ -24,6 +24,7 @@ public:
     MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4Box *parent);
     unsigned int currentLocation() { return m_currentLocation; }
     unsigned int offset() { return m_offset; }
+
     void readBoxes();
     void readHeader(unsigned int &length, string &type);
     void readBytes(int numBytes, void *destination);
@@ -46,6 +47,7 @@ public:
     float readFP16();
     string readISO639();
     void readUCharArray(int length, unsigned char *array);
+    MP4Box *topNode() { return m_topNode; }
 };
 
 class MP4FileReader
@@ -55,6 +57,7 @@ private:
     ifstream m_file;
     int      m_totalNumberOfBytes;
     char    *m_bytes;
+    MP4Reader *m_reader;
 
     bool open();
     void ensureOpen();
@@ -62,6 +65,8 @@ private:
 public:
     MP4FileReader(string filename, int totalNumberOfBytes);
     void read();
+    MP4Reader *reader() { return m_reader; }
+    MP4Box* findNodeByPath(string path);
 };
 
 #endif // MP4READER_H

@@ -1,7 +1,8 @@
 #include "mp4box.h"
 #include "mp4reader.h"
-#include "atoms.h"
+#include "atoms/atoms.h"
 
+#include <sstream>
 #include <algorithm>
 #include <iostream>
 using std::cout; using std::endl;
@@ -52,7 +53,6 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
 #endif
 
     if(type.compare(string("ftyp")) == 0) {
-
         box = new AtomFTYP();
     } else if(type.compare(string("moov")) == 0) {
         box = new AtomMOOV();
@@ -135,7 +135,26 @@ vector<MP4Box *> MP4Box::findChildren(string type)
 MP4Box *MP4Box::findChild(string type, unsigned int index)
 {
     vector<MP4Box*> children = findChildren(type);
-    return children.at(index);
+    if(children.size() > index) return children.at(index);
+    else return 0;
+}
+
+MP4Box *MP4Box::findChildByPath(string path)
+{
+    // From http://stackoverflow.com/questions/19370078/split-the-string-on-dot-and-retrieve-each-values-from-it-in-c
+    MP4Box *treeParent = this;
+
+    std::istringstream iss(path);
+    string token;
+    while (getline(iss, token, '.')) {
+        if (!token.empty()) {
+            treeParent = treeParent->findChild(token);
+            if(treeParent == 0) return 0; // We didn't find it
+            // This is a part of the path
+        }
+    }
+
+    return treeParent;
 }
 
 vector<MP4Box *> &MP4Box::children()
