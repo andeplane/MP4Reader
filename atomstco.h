@@ -6,6 +6,9 @@ class AtomSTCO : public MP4Box
 {
 public:
     AtomSTCO();
+    FullHeader fullheader;
+    vector<unsigned int> table;
+    void readThisBox();
 };
 
 #endif // ATOMSTCO_H

@@ -4,6 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
 
+#DEFINES += MP4DEBUG
+
 SOURCES += main.cpp \
     mp4reader.cpp \
     mp4box.cpp \

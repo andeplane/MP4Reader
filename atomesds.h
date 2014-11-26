@@ -6,6 +6,8 @@ class AtomESDS : public MP4Box
 {
 public:
     AtomESDS();
+    FullHeader fullheader;
+    void readThisBox();
 };
 
 #endif // ATOMESDS_H

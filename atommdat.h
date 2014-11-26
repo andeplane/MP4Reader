@@ -6,6 +6,8 @@ class AtomMDAT : public MP4Box
 {
 public:
     AtomMDAT();
+    void readThisBox();
+    vector<unsigned char> data;
 };
 
 #endif // ATOMMDAT_H

@@ -38,7 +38,6 @@ void MP4Box::setup(MP4Reader *reader, unsigned int length, string type, MP4Box *
 
 MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
 {
-    cout << endl << "Will read a new atom" << endl;
     reader->newBoxLength(16); // The function will subtract 8 for the headerbytes, but currently, the total 8 bytes might be everything, so this will add a total of 8 bytes until the next header.
     unsigned int length;
     string type;
@@ -46,63 +45,62 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     reader->newBoxLength(length);
     MP4Box *box;
 
-    vector<string> supportedExtraAtoms = {"iods", "edts", "vmhd", "dinf"};
+    vector<string> supportedExtraAtoms = {"iods", "edts", "vmhd", "dinf", "udta", "free"};
+
+#ifdef MP4DEBUG
+        cout << "Read a box of type " << type << " with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
+#endif
 
     if(type.compare(string("ftyp")) == 0) {
-        cout << "Read a box of type FTYP with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
+
         box = new AtomFTYP();
     } else if(type.compare(string("moov")) == 0) {
-        cout << "Read a box of type MOOV with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomMOOV();
     } else if(type.compare(string("mvhd")) == 0) {
-        cout << "Read a box of type MVHD with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomMVHD();
     } else if(type.compare(string("trak")) == 0) {
-        cout << "Read a box of type TRAK with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomTRAK();
     } else if(type.compare(string("tkhd")) == 0) {
-        cout << "Read a box of type TKHD with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomTKHD();
     } else if(type.compare(string("mdia")) == 0) {
-        cout << "Read a box of type MDIA with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomMDIA();
     } else if(type.compare(string("mdhd")) == 0) {
-        cout << "Read a box of type MDHD with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomMDHD();
     } else if(type.compare(string("hdlr")) == 0) {
-        cout << "Read a box of type HDLR with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomHDLR();
     } else if(type.compare(string("minf")) == 0) {
-        cout << "Read a box of type MINF with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomMINF();
     } else if(type.compare(string("stbl")) == 0) {
-        cout << "Read a box of type STBL with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomSTBL();
     } else if(type.compare(string("stsd")) == 0) {
-        cout << "Read a box of type STSD with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomSTSD();
     } else if(type.compare(string("avc1")) == 0) {
-        cout << "Read a box of type AVC1 with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomAVC1();
     } else if(type.compare(string("avcC")) == 0) {
-        cout << "Read a box of type AVCC with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomAVCC();
     } else if(type.compare(string("btrt")) == 0) {
-        cout << "Read a box of type BTRT with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomBTRT();
     } else if(type.compare(string("stts")) == 0) {
-        cout << "Read a box of type STTS with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomSTTS();
     } else if(type.compare(string("stss")) == 0) {
-        cout << "Read a box of type STSS with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomSTSS();
     } else if(type.compare(string("stsc")) == 0) {
-        cout << "Read a box of type STSC with length " << length << " and offset " << reader->currentLocation() + reader->offset() - 8<< endl;
         box = new AtomSTSC();
+    } else if(type.compare(string("stsz")) == 0) {
+        box = new AtomSTSZ();
+    } else if(type.compare(string("stco")) == 0) {
+        box = new AtomSTCO();
+    } else if(type.compare(string("smhd")) == 0) {
+        box = new AtomSMHD();
+    } else if(type.compare(string("mp4a")) == 0) {
+        box = new AtomMP4A();
+    } else if(type.compare(string("esds")) == 0) {
+        box = new AtomESDS();
+    } else if(type.compare(string("mdat")) == 0) {
+        box = new AtomMDAT();
     } else {
         if(std::find(supportedExtraAtoms.begin(), supportedExtraAtoms.end(), type) != supportedExtraAtoms.end()) {
             box = new MP4Box(type);
-            cout << "Read a box of type " << type << " with length " << length << " and offset " << reader->currentLocation() + reader->offset() << endl;
         } else {
             cout << "Box of type " << type << " is not implemented yet, aborting! " << endl;
             exit(1);
@@ -111,7 +109,9 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
 
     box->setup(reader, length, type, parent);
     box->readThisBox();
+#ifdef MP4DEBUG
     cout << "Finished with box of type " << type << endl;
+#endif
     return box;
 }
 

@@ -37,13 +37,13 @@ void MP4Reader::readHeader(unsigned int &length, string &type) {
 }
 
 void MP4Reader::skipBytes(int numBytes) {
-    cout << "    Skipping " << numBytes << " bytes." << endl;
+    // cout << "    Skipping " << numBytes << " bytes." << endl;
     m_currentLocation += numBytes;
 }
 
 void MP4Reader::readBytes(int numBytes, void *destination)
 {
-    cout << "    Reading " << numBytes << " bytes - " << remainingBytes() << " bytes left in atom." << endl;
+    // cout << "    Reading " << numBytes << " bytes - " << remainingBytes() << " bytes left in atom." << endl;
     memcpy(destination, &m_bytes[m_currentLocation], numBytes);
     m_currentLocation += numBytes;
 }
@@ -146,7 +146,9 @@ void MP4Reader::newBoxLength(unsigned int length)
 
 void MP4Reader::skipRemainingBytes() {
     unsigned int bytesLeftInBox = remainingBytes();
+#ifdef MP4DEBUG
     cout << "Skipping the remaining " << bytesLeftInBox << " bytes in this atom." << endl;
+#endif
     skipBytes(bytesLeftInBox);
 }
 
@@ -157,7 +159,9 @@ unsigned int MP4Reader::remainingBytes()
 
 MP4Reader *MP4Reader::subReader(MP4Box *parent)
 {
+#ifdef MP4DEBUG
     cout << "Will create a subreader from " << m_currentLocation+m_offset << " with remaining bytes: " << remainingBytes() << endl;
+#endif
     MP4Reader *subReader = new MP4Reader(&m_bytes[m_currentLocation], remainingBytes(), m_currentLocation+m_offset, parent);
     return subReader;
 }
