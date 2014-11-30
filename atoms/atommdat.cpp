@@ -9,7 +9,5 @@ AtomMDAT::AtomMDAT()
 void AtomMDAT::readThisBox()
 {
     data.resize(m_reader->remainingBytes());
-    for(unsigned int i=0; i<data.size(); i++) {
-        data[i] = m_reader->readUChar();
-    }
+    m_reader->readBytes(data.size(), &data.front());
 }

@@ -53,53 +53,77 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
 #endif
 
     if(type.compare(string("ftyp")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomFTYP with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomFTYP();
     } else if(type.compare(string("moov")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomMOOV with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomMOOV();
     } else if(type.compare(string("mvhd")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomMVHD with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomMVHD();
     } else if(type.compare(string("trak")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomTRAK with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomTRAK();
     } else if(type.compare(string("tkhd")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomTKHD with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomTKHD();
     } else if(type.compare(string("mdia")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomMDIA with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomMDIA();
     } else if(type.compare(string("mdhd")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomMDHD with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomMDHD();
     } else if(type.compare(string("hdlr")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomHDLR with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomHDLR();
     } else if(type.compare(string("minf")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomMINF with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomMINF();
     } else if(type.compare(string("stbl")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomSTBL with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomSTBL();
     } else if(type.compare(string("stsd")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomSTSD with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomSTSD();
     } else if(type.compare(string("avc1")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomAVC1 with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomAVC1();
     } else if(type.compare(string("avcC")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomAVCC with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomAVCC();
     } else if(type.compare(string("btrt")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomBTRT with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomBTRT();
     } else if(type.compare(string("stts")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomSTTS with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomSTTS();
     } else if(type.compare(string("stss")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomSTSS with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomSTSS();
     } else if(type.compare(string("stsc")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomSTSC with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomSTSC();
     } else if(type.compare(string("stsz")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomSTSZ with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomSTSZ();
     } else if(type.compare(string("stco")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomSTCO with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomSTCO();
     } else if(type.compare(string("smhd")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomSMHD with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomSMHD();
     } else if(type.compare(string("mp4a")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomMP4A with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomMP4A();
     } else if(type.compare(string("esds")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomESDS with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomESDS();
     } else if(type.compare(string("mdat")) == 0) {
+        reader->log(MP4VerboseLevel::Medium, "Creating AtomMDAT with length "+to_string(length)+" and offset "+to_string(reader->currentLocation() + reader->offset() - 8));
         box = new AtomMDAT();
     } else {
         if(std::find(supportedExtraAtoms.begin(), supportedExtraAtoms.end(), type) != supportedExtraAtoms.end()) {
+            reader->log(MP4VerboseLevel::Medium, "Creating Atom"+type);
             box = new MP4Box(type);
         } else {
             cout << "Box of type " << type << " is not implemented yet, aborting! " << endl;
@@ -108,6 +132,7 @@ MP4Box *MP4Box::readBox(MP4Reader *reader, MP4Box *parent)
     }
 
     box->setup(reader, length, type, parent);
+    cout << "Reading box of typwe " << type << endl;
     box->readThisBox();
 #ifdef MP4DEBUG
     cout << "Finished with box of type " << type << endl;
@@ -181,148 +206,7 @@ void MP4Box::readRemainingBoxes()
 {
     MP4Reader *reader = m_reader->subReader(this);
     reader->readBoxes();
-    MP4Box::readBox(m_reader, this);
+    // MP4Box::readBox(m_reader, this);
     delete reader;
+    m_reader->skipRemainingBytes(); // These bytes are read in our sub reader
 }
-
-//void MP4Box::readFTYP() {
-//    string majorBrand = read4Chars();
-//    int minorVersion = readInt();
-//    // int numberOfCompatibleBrands = (m_length - 16)/4;
-//    // readBytes(numberOfCompatibleBrands * 4 * sizeof(char));
-
-//    skipRemainingBytes();
-//}
-
-//void MP4Box::readMOOV() {
-//    readRemainingBoxes();
-//}
-
-//void MP4Box::readMVHD() {
-//    MVHD data;
-
-//    data.fullheader = readFullHeader();
-//    data.creatonTime = readUInt();
-//    data.modificationTime = readUInt();
-//    data.timeScale = readUInt();
-//    data.duration = readUInt();
-//    skipBytes(sizeof(unsigned int) + sizeof(short) + 10); // rate, volume and 10 bytes
-//    readUIntArray(9, &data.matrix[0]);
-//    skipBytes(6*4); // dunno why
-//    data.nextTrackId = readUInt();
-//}
-
-//void MP4Box::readTRAK() {
-//    readRemainingBoxes();
-//}
-
-//void MP4Box::readTKHD() {
-//    TKHD data;
-
-//    data.fullheader = readFullHeader();
-//    data.creatonTime = readUInt();
-//    data.modificationTime = readUInt();
-//    data.trackId = readUInt();
-//    skipBytes(4);
-//    data.duration = readUInt();
-//    skipBytes(8);
-//    data.layer = readUShort();
-//    data.alternateGroup = readUShort();
-//    skipBytes(4);
-//    readUIntArray(9, &data.matrix[0]);
-//    skipBytes(8);
-//}
-
-//void MP4Box::readMDIA() {
-//    readRemainingBoxes();
-//}
-
-//void MP4Box::readMDHD() {
-//    readFullHeader();
-//    skipBytes(20);
-//}
-
-//void MP4Box::readHDLR() {
-//    readFullHeader();
-//    skipBytes(8);
-//    skipBytes(4*3);
-//    int bytesLeft = m_length - 32;
-//    if(bytesLeft > 0) {
-//        skipBytes(bytesLeft);
-//    }
-//}
-
-//void MP4Box::readMINF() {
-//    readRemainingBoxes();
-//}
-
-//void MP4Box::readSTBL() {
-//    readRemainingBoxes();
-//}
-
-//void MP4Box::readSTSD() {
-//    readFullHeader();
-//    skipBytes(4);
-//    readRemainingBoxes();
-//}
-
-//void MP4Box::readAVC1() {
-//    skipBytes(6 + 3*U16 + 3*U32 + 2*U16 + 2*FP16 + U32 + U16);
-//    readPString();
-//    skipBytes(2*U16);
-//    readRemainingBoxes();
-//}
-
-//void MP4Box::readMP4A() {
-//    skipBytes(6 + 2*U16 + 6 + 4*U16 + U32);
-//    readRemainingBoxes();
-//}
-
-//void MP4Box::readESDS() {
-//    readFullHeader();
-//    skipRemainingBytes();
-//}
-
-//void MP4Box::readAVCC() {
-//    cout << "AVCC" << endl;
-//    exit(1);
-//}
-
-//void MP4Box::readBTRT() {
-//    cout << "BTRT" << endl;
-//    exit(1);
-//}
-
-//void MP4Box::readSTTS() {
-//    cout << "STTS" << endl;
-//    exit(1);
-//}
-
-//void MP4Box::readSTSS() {
-//    cout << "STSS" << endl;
-//    exit(1);
-//}
-
-//void MP4Box::readSTSZ() {
-//    cout << "STSZ" << endl;
-//    exit(1);
-//}
-
-//void MP4Box::readSTCO() {
-//    cout << "STCO" << endl;
-//    exit(1);
-//}
-
-//void MP4Box::readSMHD() {
-//    cout << "SMHD" << endl;
-//    exit(1);
-//}
-
-//void MP4Box::readMDAT() {
-//    cout << "MDAT" << endl;
-//    exit(1);
-//}
-
-//void MP4Box::defaultApproach() {
-//    skipRemainingBytes();
-//}

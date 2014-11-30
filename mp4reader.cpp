@@ -1,5 +1,8 @@
 #include "mp4reader.h"
+#include "mp4reader.h"
 #include "mp4box.h"
+#include "track.h"
+#include "mp4file.h"
 
 #include <iostream>
 #include <stdio.h>
@@ -8,7 +11,7 @@
 
 using std::cout; using std::endl;
 
-MP4Reader::MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4Box *parent)
+MP4Reader::MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4File *file, unsigned int readerDepth, MP4Box *parent)
 {
     if(parent) m_topNode = parent;
     else {
@@ -17,35 +20,36 @@ MP4Reader::MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4B
     m_offset = offset;
     m_bytes = bytes;
     m_length = length;
+    m_file = file;
     m_nextBoxAt = 8;
-}
-
-MP4FileReader::MP4FileReader(string filename, int totalNumberOfBytes) :
-    m_totalNumberOfBytes(totalNumberOfBytes),
-    m_reader(0)
-{
-    m_filename = filename;
+    m_currentLocation = 0;
+    m_readerDepth = readerDepth;
+    log(MP4VerboseLevel::High, "Created new MP4Reader with offset "+to_string(offset)+" and length "+to_string(length));
 }
 
 void MP4Reader::readBoxes() {
     while(m_currentLocation + 4 < m_length) {
         MP4Box::readBox(this, m_topNode);
     }
+    if(m_topNode->name().compare("root") == 0) {
+        cout << "Main reader finished." << endl;
+    }
 }
 
 void MP4Reader::readHeader(unsigned int &length, string &type) {
     length = readUInt();
     type = read4Chars();
+    log(MP4VerboseLevel::Full, "Read header with type '"+type+"' and length "+to_string(length));
 }
 
 void MP4Reader::skipBytes(int numBytes) {
-    // cout << "    Skipping " << numBytes << " bytes." << endl;
+    log(MP4VerboseLevel::Full, "Skipping "+to_string(numBytes)+" bytes.");
     m_currentLocation += numBytes;
 }
 
 void MP4Reader::readBytes(int numBytes, void *destination)
 {
-    // cout << "    Reading " << numBytes << " bytes - " << remainingBytes() << " bytes left in atom." << endl;
+    log(MP4VerboseLevel::Full, "Will read "+to_string(numBytes)+" bytes with local location: "+to_string(m_currentLocation) +" and global location: "+to_string(m_currentLocation+m_offset));
     memcpy(destination, &m_bytes[m_currentLocation], numBytes);
     m_currentLocation += numBytes;
 }
@@ -53,7 +57,6 @@ void MP4Reader::readBytes(int numBytes, void *destination)
 string MP4Reader::readISO639()
 {
     skipBytes(sizeof(unsigned short));
-    // short bits = readUShort();
     return "";
 }
 
@@ -77,6 +80,7 @@ std::string MP4Reader::read4Chars()
     char str[5];
     str[4] = 0; // terminate character
     readBytes(4*sizeof(char), str);
+    log(MP4VerboseLevel::Full, "Read 4 chars: "+string(str));
     return string(str);
 }
 
@@ -85,6 +89,7 @@ short MP4Reader::readShort()
     short n;
     readBytes(sizeof(short), &n);
     n = __builtin_bswap16(n);
+    log(MP4VerboseLevel::Full, "Read 8: "+to_string(n));
 
     return n;
 }
@@ -94,6 +99,7 @@ unsigned short MP4Reader::readUShort()
     unsigned short n;
     readBytes(sizeof(unsigned short), &n);
     n = __builtin_bswap16(n);
+    log(MP4VerboseLevel::Full, "Read U16: "+to_string(n));
 
     return n;
 }
@@ -103,6 +109,7 @@ char MP4Reader::readChar()
     char n;
     readBytes(sizeof(char), &n);
     n = __builtin_bswap32(n);
+    log(MP4VerboseLevel::Full, "Read 8: "+to_string(n));
 
     return n;
 }
@@ -112,6 +119,7 @@ unsigned char MP4Reader::readUChar()
     unsigned char n;
     readBytes(sizeof(unsigned char), &n);
     n = __builtin_bswap32(n);
+    log(MP4VerboseLevel::Full, "Read U8: "+to_string(n));
 
     return n;
 }
@@ -121,6 +129,7 @@ int MP4Reader::readInt()
     int n;
     readBytes(sizeof(int), &n);
     n = __builtin_bswap32(n);
+    log(MP4VerboseLevel::Full, "Read 32: "+to_string(n));
 
     return n;
 }
@@ -141,9 +150,9 @@ void MP4Reader::readUCharArray(int length, unsigned char *array)
     }
 }
 
-MP4Box *MP4FileReader::findNodeByPath(std::string path)
+void MP4Reader::log(MP4VerboseLevel verboseLevel, string message)
 {
-    return m_reader->topNode()->findChildByPath(path);
+    m_file->log(verboseLevel, message);
 }
 
 void MP4Reader::newBoxLength(unsigned int length)
@@ -169,22 +178,22 @@ unsigned int MP4Reader::remainingBytes()
 
 MP4Reader *MP4Reader::subReader(MP4Box *parent)
 {
-#ifdef MP4DEBUG
-    cout << "Will create a subreader from " << m_currentLocation+m_offset << " with remaining bytes: " << remainingBytes() << endl;
-#endif
-    MP4Reader *subReader = new MP4Reader(&m_bytes[m_currentLocation], remainingBytes(), m_currentLocation+m_offset, parent);
+    // Create a new subreader with a depth increased by one
+    MP4Reader *subReader = new MP4Reader(&m_bytes[m_currentLocation], remainingBytes(), m_currentLocation+m_offset, m_file, m_readerDepth+1, parent);
     return subReader;
 }
 
 float MP4Reader::readFP16()
 {
     int n = readInt();
+    log(MP4VerboseLevel::Full, "Read FP8: "+to_string(float(n)/65536.0f));
     return float(n)/65536.0f;
 }
 
 float MP4Reader::readFP8()
 {
     short n = readShort();
+    log(MP4VerboseLevel::Full, "Read FP8: "+to_string(float(n)/256.0f));
     return float(n)/256.0f;
 }
 
@@ -193,51 +202,7 @@ unsigned int MP4Reader::readUInt()
     unsigned int n;
     readBytes(sizeof(unsigned int), &n);
     n = __builtin_bswap32(n);
+    log(MP4VerboseLevel::Full, "Read U32: "+to_string(n));
 
     return n;
-}
-
-bool MP4FileReader::open()
-{
-    m_file.open(m_filename, std::ios::binary | std::ios::in);
-    if(m_file.is_open()) return true;
-    else {
-        std::cout << "Could not open file " << m_filename << std::endl;
-        return false;
-    }
-
-    if(m_totalNumberOfBytes == -1) {
-        // We have the whole file
-        cout << "We are asked to read the whole file" << endl;
-        readBytesFromFile(-1);
-    }
-}
-
-void MP4FileReader::ensureOpen() {
-    if(!m_file.is_open()) {
-        cout << "File " << m_filename << " is not open, opening..." << endl;
-        open();
-    }
-}
-
-void MP4FileReader::readBytesFromFile(int numBytes) {
-    // TODO: Possibly broken and not general at all...
-    ensureOpen();
-    if(numBytes == -1) {
-        m_file.seekg (0, m_file.end);
-        numBytes = m_file.tellg();
-        m_file.seekg (0, m_file.beg);
-        cout << "Will read the whole file which is " << numBytes << " bytes long." << endl;
-        m_totalNumberOfBytes = numBytes;
-    }
-    m_bytes = new char[numBytes];
-    m_file.read(reinterpret_cast<char*>(m_bytes), numBytes);
-}
-
-void MP4FileReader::read()
-{
-    readBytesFromFile(-1);
-    cout << "Total number of bytes in file: " << m_totalNumberOfBytes << endl;
-    m_reader = new MP4Reader(m_bytes, m_totalNumberOfBytes, 0, 0);
-    m_reader->readBoxes();
 }

@@ -4,25 +4,35 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 using std::cout;
 using std::endl;
 using std::string;
 using std::ifstream;
+using std::ofstream;
 using std::vector;
+using std::map;
+
 class MP4Box;
+class MP4File;
+class Track;
+enum class MP4VerboseLevel { None = 0, Low = 1, Medium = 2, High = 3, Full = 4};
 
 class MP4Reader
 {
 private:
     unsigned int      m_currentLocation;
+    MP4File          *m_file;
     MP4Box           *m_topNode;
     char             *m_bytes;
     unsigned int      m_length;
     unsigned int      m_offset;
     unsigned int      m_nextBoxAt;
+    unsigned int      m_readerDepth;
 public:
-    MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4Box *parent);
+    MP4Reader(char *bytes, unsigned int length, unsigned int offset, MP4File *file, unsigned int readerDepth, MP4Box *parent);
     unsigned int currentLocation() { return m_currentLocation; }
+    unsigned int currentGlobalLocation() { return m_currentLocation+m_offset; }
     unsigned int offset() { return m_offset; }
 
     void readBoxes();
@@ -48,25 +58,9 @@ public:
     string readISO639();
     void readUCharArray(int length, unsigned char *array);
     MP4Box *topNode() { return m_topNode; }
-};
-
-class MP4FileReader
-{
-private:
-    string   m_filename;
-    ifstream m_file;
-    int      m_totalNumberOfBytes;
-    char    *m_bytes;
-    MP4Reader *m_reader;
-
-    bool open();
-    void ensureOpen();
-    void readBytesFromFile(int numBytes);
-public:
-    MP4FileReader(string filename, int totalNumberOfBytes);
-    void read();
-    MP4Reader *reader() { return m_reader; }
-    MP4Box* findNodeByPath(string path);
+    MP4File *file() { return m_file; }
+    unsigned int readerDepth() { return m_readerDepth; }
+    void log(MP4VerboseLevel verboseLevel, string message);
 };
 
 #endif // MP4READER_H

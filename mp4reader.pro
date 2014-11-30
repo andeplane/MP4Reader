@@ -31,7 +31,9 @@ SOURCES += main.cpp \
     atoms/atomstsz.cpp \
     atoms/atomstco.cpp \
     atoms/atomsmhd.cpp \
-    atoms/atommdat.cpp
+    atoms/atommdat.cpp \
+    track.cpp \
+    mp4file.cpp
 
 include(deployment.pri)
 qtcAddDeployment()
@@ -62,5 +64,7 @@ HEADERS += \
     atoms/atomstco.h \
     atoms/atomsmhd.h \
     atoms/atommdat.h \
-    atoms/atoms.h
+    atoms/atoms.h \
+    track.h \
+    mp4file.h
 

@@ -1,4 +1,7 @@
 #include "atomtrak.h"
+#include "mp4reader.h"
+#include "mp4file.h"
+#include "track.h"
 
 AtomTRAK::AtomTRAK()
 {
@@ -8,7 +11,6 @@ AtomTRAK::AtomTRAK()
 void AtomTRAK::readThisBox()
 {
     readRemainingBoxes();
-#ifdef MP4DEBUG
-    cout << "TRAK: TODO: Create track objects" << endl;
-#endif
+    Track *track = new Track(m_reader->file(), this);
+    m_reader->file()->addTrack(track);
 }
